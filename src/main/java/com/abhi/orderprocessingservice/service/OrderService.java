@@ -1,8 +1,12 @@
 package com.abhi.orderprocessingservice.service;
 
+import com.abhi.orderprocessingservice.exception.OrderNotFoundException;
+import com.abhi.orderprocessingservice.model.UpdateOrderRequest;
 import com.abhi.orderprocessingservice.repository.OrderRepository;
 import com.abhi.orderprocessingservice.model.Order;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,20 +22,25 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order updateOrder(Order dbOrder, Order orderToUpdate){
-        dbOrder.setAmount(orderToUpdate.getAmount() !=null?orderToUpdate.getAmount():dbOrder.getAmount()) ;
-        dbOrder.setStatus(orderToUpdate.getStatus() !=null?orderToUpdate.getStatus():dbOrder.getStatus());
-        dbOrder.setCustomerName(orderToUpdate.getCustomerName() !=null?orderToUpdate.getCustomerName():dbOrder.getCustomerName());
-        dbOrder.setUpdatedAt(Instant.now());
+    @Transactional
+    public Order updateOrder(Long orderId, UpdateOrderRequest orderToUpdate) throws OrderNotFoundException{
+        Order dbOrder = findOrderById(orderId);
+        if (orderToUpdate.customerName() != null) dbOrder.setCustomerName(orderToUpdate.customerName());
+        if (orderToUpdate.status() != null) dbOrder.setStatus(orderToUpdate.status());
+        if (orderToUpdate.amount() != null) dbOrder.setAmount(orderToUpdate.amount());
         return orderRepository.save(dbOrder);
     }
 
-    public Optional<Order> findOrderById(Long orderId){
-        return orderRepository.findById(orderId);
+    public Order findOrderById(Long orderId){
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
-    public void deleteOrder(Order order){
-       orderRepository.delete(order);
+    @Transactional
+    public Order deleteOrder(Long orderId){
+       Order dbOrder = findOrderById(orderId);
+       orderRepository.delete(dbOrder);
+       return dbOrder;
     }
 
 }

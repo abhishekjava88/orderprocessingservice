@@ -39,6 +39,7 @@ public class Order {
 
     @PrePersist
     protected void onCreate(){
+        status = OrderStatus.PENDING;
         createdAt = Instant.now();
         updatedAt = Instant.now();
     }

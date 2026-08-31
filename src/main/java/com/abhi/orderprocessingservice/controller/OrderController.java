@@ -1,6 +1,8 @@
 package com.abhi.orderprocessingservice.controller;
 
+import com.abhi.orderprocessingservice.model.CreateOrderRequest;
 import com.abhi.orderprocessingservice.model.Order;
+import com.abhi.orderprocessingservice.model.UpdateOrderRequest;
 import com.abhi.orderprocessingservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,39 +22,30 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/createOrder")
-    public ResponseEntity<Order> createOrder(@RequestBody Order order){
+    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request){
+        Order order = new Order();
+        order.setCustomerName(request.customerName());
+        order.setAmount(request.amount());
         Order result = orderService.createOrder(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @GetMapping("/findOrder/{orderId}")
     public ResponseEntity<Order> findOrder(@PathVariable Long orderId){
-        Optional<Order> result = orderService.findOrderById(orderId);
-        if(result.isPresent()){
-            return ResponseEntity.status(HttpStatus.OK).body(result.get());
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        Order result = orderService.findOrderById(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @PatchMapping("/updateOrder")
-    public ResponseEntity<Order> updateOrder(@RequestBody Order order){
-        Optional<Order> result = orderService.findOrderById(order.getId());
-        if(result.isPresent()){
-            Order dbOrder = result.get();
-            return ResponseEntity.status(HttpStatus.OK).body(orderService.updateOrder(dbOrder,order));
-        }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    @PatchMapping("/updateOrder/{orderId}")
+    public ResponseEntity<Order> updateOrder(@PathVariable Long orderId, @RequestBody UpdateOrderRequest order){
+        Order result = orderService.updateOrder(orderId,order);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @DeleteMapping("/deleteOrder/{orderId}")
     public ResponseEntity<Order> deleteOrder(@PathVariable Long orderId){
-        Optional<Order> result = orderService.findOrderById(orderId);
-        if(result.isPresent()){
-            Order order = result.get();
-            orderService.deleteOrder(order);
-            return ResponseEntity.status(HttpStatus.OK).body(order);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        Order deletedOrder = orderService.deleteOrder(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body(deletedOrder);
     }
 
 
