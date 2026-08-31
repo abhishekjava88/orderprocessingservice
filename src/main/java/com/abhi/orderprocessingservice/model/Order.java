@@ -1,7 +1,6 @@
 package com.abhi.orderprocessingservice.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +13,10 @@ import java.time.Instant;
 @Setter
 @Table(name = "orders")
 public class Order {
+
+    public Order(){
+
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
