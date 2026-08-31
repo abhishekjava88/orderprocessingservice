@@ -34,8 +34,7 @@ public class OrderService {
 
     @Transactional
     public Order deleteOrder(Long orderId){
-       Order dbOrder = orderRepository.findById(orderId)
-               .orElseThrow(() -> new OrderNotFoundException(orderId));
+       Order dbOrder = findOrderById(orderId);
        orderRepository.delete(dbOrder);
        return dbOrder;
     }
