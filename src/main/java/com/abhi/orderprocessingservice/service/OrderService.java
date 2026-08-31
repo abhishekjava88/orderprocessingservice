@@ -1,6 +1,6 @@
 package com.abhi.orderprocessingservice.service;
 
-import com.abhi.orderprocessingservice.dao.OrderRepository;
+import com.abhi.orderprocessingservice.repository.OrderRepository;
 import com.abhi.orderprocessingservice.model.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

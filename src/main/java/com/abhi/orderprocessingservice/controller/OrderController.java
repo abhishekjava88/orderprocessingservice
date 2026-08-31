@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @RestController
@@ -20,8 +21,9 @@ public class OrderController {
 
     @PostMapping("/createOrder")
     public ResponseEntity<Order> createOrder(@RequestBody Order order){
+        order.setCreatedAt(Instant.now());
         Order result = orderService.createOrder(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body(order);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @GetMapping("/findOrder/{orderId}")
@@ -33,11 +35,13 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @PutMapping("/updateOrder")
+    @PatchMapping("/updateOrder")
     public ResponseEntity<Order> updateOrder(@RequestBody Order order){
         Optional<Order> result = orderService.findOrderById(order.getId());
         if(result.isPresent()){
-            ResponseEntity.status(HttpStatus.OK).body(orderService.updateOrder(result.get(),order));
+            Order dbOrder = result.get();
+            dbOrder.setUpdatedAt(Instant.now());
+            return ResponseEntity.status(HttpStatus.OK).body(orderService.updateOrder(dbOrder,order));
         }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
