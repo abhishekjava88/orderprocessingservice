@@ -21,7 +21,6 @@ public class OrderController {
 
     @PostMapping("/createOrder")
     public ResponseEntity<Order> createOrder(@RequestBody Order order){
-        order.setCreatedAt(Instant.now());
         Order result = orderService.createOrder(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
@@ -40,7 +39,6 @@ public class OrderController {
         Optional<Order> result = orderService.findOrderById(order.getId());
         if(result.isPresent()){
             Order dbOrder = result.get();
-            dbOrder.setUpdatedAt(Instant.now());
             return ResponseEntity.status(HttpStatus.OK).body(orderService.updateOrder(dbOrder,order));
         }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

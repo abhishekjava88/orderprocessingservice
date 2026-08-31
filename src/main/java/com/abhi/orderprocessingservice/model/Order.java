@@ -37,4 +37,15 @@ public class Order {
 
     private Instant updatedAt;
 
+    @PrePersist
+    protected void onCreate(){
+        createdAt = Instant.now();
+        updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void OnUpdate(){
+        updatedAt = Instant.now();
+    }
+
 }
