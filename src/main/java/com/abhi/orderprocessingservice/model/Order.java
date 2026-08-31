@@ -45,7 +45,7 @@ public class Order {
     }
 
     @PreUpdate
-    protected void OnUpdate(){
+    protected void onUpdate(){
         updatedAt = Instant.now();
     }
 

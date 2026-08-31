@@ -4,13 +4,9 @@ import com.abhi.orderprocessingservice.exception.OrderNotFoundException;
 import com.abhi.orderprocessingservice.model.UpdateOrderRequest;
 import com.abhi.orderprocessingservice.repository.OrderRepository;
 import com.abhi.orderprocessingservice.model.Order;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +34,8 @@ public class OrderService {
 
     @Transactional
     public Order deleteOrder(Long orderId){
-       Order dbOrder = findOrderById(orderId);
+       Order dbOrder = orderRepository.findById(orderId)
+               .orElseThrow(() -> new OrderNotFoundException(orderId));
        orderRepository.delete(dbOrder);
        return dbOrder;
     }
