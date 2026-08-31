@@ -7,7 +7,6 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Data
 @Entity
 @Table(name = "orders")
 public class Order {
