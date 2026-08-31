@@ -2,7 +2,7 @@ package com.abhi.orderprocessingservice.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Generated;
+
 
 import java.math.BigDecimal;
 import java.time.Instant;
