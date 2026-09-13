@@ -19,7 +19,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Order updateOrder(Long orderId, UpdateOrderRequest orderToUpdate) throws OrderNotFoundException{
+    public Order updateOrder(Long orderId, UpdateOrderRequest orderToUpdate){
         Order dbOrder = findOrderById(orderId);
         if (orderToUpdate.customerName() != null) dbOrder.setCustomerName(orderToUpdate.customerName());
         if (orderToUpdate.status() != null) dbOrder.setStatus(orderToUpdate.status());
