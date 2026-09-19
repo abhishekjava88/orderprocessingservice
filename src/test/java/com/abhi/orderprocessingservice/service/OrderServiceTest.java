@@ -34,7 +34,6 @@ class OrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        orderService = new OrderService(orderRepository);
         order = new Order();
         order.setCustomerName("Abhishek");
         order.setAmount(BigDecimal.valueOf(22.0));
@@ -64,24 +63,25 @@ class OrderServiceTest {
         order.setAmount(BigDecimal.valueOf(22.0));
         when(orderRepository.findById(anyLong())).thenReturn(Optional.of(order));
         when(orderRepository.save(order)).thenReturn(order);
-        Order result = orderService.updateOrder(anyLong(),updateOrderRequest);
+        Order result = orderService.updateOrder(1L,updateOrderRequest);
         assertEquals(result.getAmount(),updateOrderRequest.amount());
         assertNotNull(result.getAmount());
+        assertEquals("Abhishek", result.getCustomerName());
     }
 
     @Test
     void findOrderById_throwsWhenMissing() {
-        when(orderRepository.findById(anyLong())).thenThrow(OrderNotFoundException.class);
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(OrderNotFoundException.class,()-> orderService.findOrderById(anyLong()));
     }
 
     @Test
     void deleteOrder() {
         Order actualOrder = new Order();
-        order.setCustomerName("Abhishek");
-        order.setAmount(BigDecimal.valueOf(22.0));
+        actualOrder.setCustomerName("Abhishek");
+        actualOrder.setAmount(BigDecimal.valueOf(22.0));
         when(orderRepository.findById(anyLong())).thenReturn(Optional.of(actualOrder));
-        Order result = orderService.deleteOrder(anyLong());
+        Order result = orderService.deleteOrder(2L);
         assertEquals(actualOrder,result);
     }
 }
