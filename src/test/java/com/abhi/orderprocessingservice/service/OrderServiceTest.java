@@ -52,7 +52,7 @@ class OrderServiceTest {
     void updateOrder_throwsWhenNotFound() {
         UpdateOrderRequest updateOrderRequest = new UpdateOrderRequest("Abhishek",PENDING,BigDecimal.valueOf(56.0));
         when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(OrderNotFoundException.class,()->orderService.updateOrder(anyLong(),updateOrderRequest));
+        assertThrows(OrderNotFoundException.class,()->orderService.updateOrder(1L,updateOrderRequest));
     }
 
     @Test
@@ -72,16 +72,17 @@ class OrderServiceTest {
     @Test
     void findOrderById_throwsWhenMissing() {
         when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(OrderNotFoundException.class,()-> orderService.findOrderById(anyLong()));
+        assertThrows(OrderNotFoundException.class,()-> orderService.findOrderById(1L));
     }
 
     @Test
-    void deleteOrder() {
+    void deleteOrder_deletesAndReturnsOrder() {
         Order actualOrder = new Order();
         actualOrder.setCustomerName("Abhishek");
         actualOrder.setAmount(BigDecimal.valueOf(22.0));
         when(orderRepository.findById(anyLong())).thenReturn(Optional.of(actualOrder));
         Order result = orderService.deleteOrder(2L);
         assertEquals(actualOrder,result);
+        verify(orderRepository).delete(actualOrder);
     }
 }
