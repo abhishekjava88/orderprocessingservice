@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Executable;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -33,56 +35,50 @@ class OrderServiceTest {
     private Order order;
 
     @BeforeEach
-    void setUp() {
+    void setUp(){
         order = new Order();
         order.setCustomerName("Abhishek");
-        order.setAmount(BigDecimal.valueOf(22.0));
+        order.setStatus(PENDING);
+        order.setAmount(BigDecimal.valueOf(75L));
     }
 
-    @Test
-    void createOrder_savesAndReturnsOrder() {
+@Test
+    void createOrder_savesAndReturnsOrder(){
         when(orderRepository.save(order)).thenReturn(order);
         Order result = orderService.createOrder(order);
-        verify(orderRepository).save(order);
         assertEquals(order,result);
-
     }
 
     @Test
-    void updateOrder_throwsWhenNotFound() {
-        UpdateOrderRequest updateOrderRequest = new UpdateOrderRequest("Abhishek",PENDING,BigDecimal.valueOf(56.0));
+    void updateOrder_throwsWhenNotFound(){
+        UpdateOrderRequest updateOrderRequest = new UpdateOrderRequest("Abhishek",PENDING,BigDecimal.valueOf(78L));
         when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(OrderNotFoundException.class,()->orderService.updateOrder(1L,updateOrderRequest));
+        assertThrows(OrderNotFoundException.class, ()->orderService.updateOrder(10L,updateOrderRequest));
     }
 
     @Test
-    void updateOrder_onlyUpdatesNonNullFields() {
-        UpdateOrderRequest updateOrderRequest = new UpdateOrderRequest(null,null,BigDecimal.valueOf(52.0));
-        Order order = new Order();
-        order.setCustomerName("Abhishek");
-        order.setAmount(BigDecimal.valueOf(22.0));
+    void updateOrder_onlyUpdatesNonNullFields(){
+        UpdateOrderRequest updateOrderRequest = new UpdateOrderRequest(null,null,BigDecimal.valueOf(85L));
         when(orderRepository.findById(anyLong())).thenReturn(Optional.of(order));
         when(orderRepository.save(order)).thenReturn(order);
-        Order result = orderService.updateOrder(1L,updateOrderRequest);
+        Order result = orderService.updateOrder(10L,updateOrderRequest);
         assertEquals(result.getAmount(),updateOrderRequest.amount());
-        assertNotNull(result.getAmount());
+        assertNotNull(result.getStatus());
+        assertNotNull(result.getCustomerName());
         assertEquals("Abhishek", result.getCustomerName());
     }
 
     @Test
-    void findOrderById_throwsWhenMissing() {
+    void findOrderById_throwsWhenMissing(){
         when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(OrderNotFoundException.class,()-> orderService.findOrderById(1L));
+        assertThrows(OrderNotFoundException.class,()-> orderService.findOrderById(10L));
     }
 
     @Test
-    void deleteOrder_deletesAndReturnsOrder() {
-        Order actualOrder = new Order();
-        actualOrder.setCustomerName("Abhishek");
-        actualOrder.setAmount(BigDecimal.valueOf(22.0));
-        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(actualOrder));
-        Order result = orderService.deleteOrder(2L);
-        assertEquals(actualOrder,result);
-        verify(orderRepository).delete(actualOrder);
+    void deleteOrder_deletesAndReturnsOrder(){
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(order));
+        Order result = orderService.deleteOrder(10L);
+        assertEquals(result,order);
+        verify(orderRepository).delete(order);
     }
 }
