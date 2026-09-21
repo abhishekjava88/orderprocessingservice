@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
+import static com.abhi.orderprocessingservice.model.OrderStatus.PENDING;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -32,7 +33,7 @@ class OrderRepositoryTest {
     @Test
     void save_setsPendingStatusAndTimestampsViaPrePersist(){
         Order result = orderRepository.save(order);
-        assertTrue(result.getStatus() == OrderStatus.PENDING);
+        assertEquals(result.getStatus(),PENDING);
         assertNotNull(result.getUpdatedAt());
         assertNotNull(result.getCreatedAt());
     }
@@ -42,7 +43,6 @@ class OrderRepositoryTest {
         Order result = orderRepository.save(order);
         orderRepository.flush();
         Instant updatedTime = result.getUpdatedAt();
-        Thread.sleep(5000);
         result.setAmount(BigDecimal.valueOf(52L));
         Order updatedResult = orderRepository.save(result);
         orderRepository.flush();
